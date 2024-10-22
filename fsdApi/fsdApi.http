@@ -1,0 +1,18 @@
+@fsdApi_HostAddress = https://localhost:7039
+
+GET {{fsdApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+GET {{fsdApi_HostAddress}}/api/customer
+
+###
+
+GET {{fsdApi_HostAddress}}/api/customer
+
+###
+
+GET {{fsdApi_HostAddress}}/api/customer
+
+###
