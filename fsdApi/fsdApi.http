@@ -16,3 +16,12 @@ GET {{fsdApi_HostAddress}}/api/customer
 GET {{fsdApi_HostAddress}}/api/customer
 
 ###
+
+POST {{fsdApi_HostAddress}}/api/customer/login
+Content-Type: application/json
+
+{
+  //LoginModel
+}
+
+###

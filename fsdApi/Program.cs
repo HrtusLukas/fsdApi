@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using fsdApi.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,9 +24,23 @@ builder.Services.AddCors(options =>
 });
 
 // Configure PostgreSQL and register the DataContext
-var Configuration = builder.Configuration;
 builder.Services.AddDbContext<DataContext>(options =>
-    options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Configure JWT authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = true;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"])),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
 
 var app = builder.Build();
 
@@ -35,12 +52,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-// Apply the CORS policy
 app.UseCors("reactApp");
-
+app.UseAuthentication(); // Ensure this comes before UseAuthorization
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.Run();
